@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Console Live - Scan #{{ scan.id if scan else 1042 }}{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="page-title"><i class="bi bi-terminal me-2 text-info"></i>Console Live</h1>
+        <p class="page-subtitle">Scan #{{ scan.id if scan else '1042' }} • {{ scan.target if scan else
+            'https://target.example.com' }}</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-ghost"><i class="bi bi-pause-circle me-1"></i>Pause</button>
+        <button class="btn btn-ghost text-danger"><i class="bi bi-stop-circle me-1"></i>Stop</button>
+    </div>
+</div>
+
+<!-- Progress Section -->
+<div class="card-custom p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0 fw-semibold">Progression globale</h5>
+        <span class="badge bg-info">Phase 2/3 : Scanning</span>
+    </div>
+
+    <div class="progress mb-3" style="height: 12px; background: var(--bg-tertiary);">
+        <div class="progress-bar" style="width: 67%; background: linear-gradient(90deg, #6366F1, #818CF8);">67%</div>
+    </div>
+
+    <!-- Phase Stepper -->
+    <div class="d-flex justify-content-between">
+        <div class="text-center">
+            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                style="width:40px;height:40px;background:rgba(34,197,94,0.15);color:#22C55E;">
+                <i class="bi bi-check-lg"></i>
+            </div>
+            <div class="small text-success">Reconnaissance</div>
+            <div class="small text-muted">Terminé</div>
+        </div>
+        <div class="flex-grow-1 d-flex align-items-center px-3">
+            <div class="w-100" style="height:2px;background:#22C55E;"></div>
+        </div>
+        <div class="text-center">
+            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                style="width:40px;height:40px;background:rgba(59,130,246,0.15);color:#3B82F6;">
+                <i class="bi bi-arrow-repeat spin"></i>
+            </div>
+            <div class="small text-primary">Scan Vulns</div>
+            <div class="small text-muted">En cours</div>
+        </div>
+        <div class="flex-grow-1 d-flex align-items-center px-3">
+            <div class="w-100" style="height:2px;background:var(--border-color);"></div>
+        </div>
+        <div class="text-center">
+            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                style="width:40px;height:40px;background:var(--bg-tertiary);color:var(--text-muted);">
+                <i class="bi bi-hourglass"></i>
+            </div>
+            <div class="small text-secondary">Exploitation</div>
+            <div class="small text-muted">En attente</div>
+        </div>
+    </div>
+</div>
+
+<!-- Tools Progress -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card-custom p-3">
+            <div class="d-flex justify-content-between mb-2">
+                <span class="fw-semibold"><i class="bi bi-shield-x text-danger me-2"></i>Nikto</span>
+                <span class="text-info">65%</span>
+            </div>
+            <div class="progress mb-2" style="height:6px;background:var(--bg-tertiary);">
+                <div class="progress-bar bg-info" style="width:65%;"></div>
+            </div>
+            <small class="text-muted">Testing: /admin, /login, /api...</small>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card-custom p-3">
+            <div class="d-flex justify-content-between mb-2">
+                <span class="fw-semibold"><i class="bi bi-atom text-primary me-2"></i>Nuclei</span>
+                <span class="text-success">89%</span>
+            </div>
+            <div class="progress mb-2" style="height:6px;background:var(--bg-tertiary);">
+                <div class="progress-bar bg-success" style="width:89%;"></div>
+            </div>
+            <small class="text-muted">Templates: 1,847/2,076</small>
+        </div>
+    </div>
+</div>
+
+<!-- Live Terminal -->
+<div class="card-custom mb-4">
+    <div class="p-3 border-bottom d-flex justify-content-between" style="border-color:var(--border-color)!important;">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-success">●</span>
+            <span class="fw-semibold">Terminal Live</span>
+            <span class="text-muted small">exegol-1042</span>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-ghost btn-sm"><i class="bi bi-clipboard"></i></button>
+            <button class="btn btn-ghost btn-sm"><i class="bi bi-download"></i></button>
+        </div>
+    </div>
+    <div class="terminal" style="height:300px;overflow-y:auto;font-size:13px;line-height:1.7;">
+        <span class="text-info">$</span> nikto -h https://target.example.com
+        - Nikto v2.5.0
+        ---------------------------------------------------------------------------
+        + Target IP: 93.184.216.34
+        + Target Hostname: target.example.com
+        + Target Port: 443
+        + Start Time: 2024-12-19 10:47:32
+        ---------------------------------------------------------------------------
+        + Server: nginx/1.18.0
+        <span class="text-warning">[!] VULN:</span> X-Frame-Options header missing
+        <span class="text-warning">[!] VULN:</span> CSP header not configured
+        <span class="text-danger">[!] CRITICAL:</span> /admin accessible without auth
+        + /sitemap.xml: Sitemap found
+        + /robots.txt: Contains 12 entries
+        <span class="text-success">[+] INFO:</span> Checking for SQL injection...
+        <span style="animation:blink 1s infinite;">█</span>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="card-custom p-3">
+    <div class="d-flex justify-content-between align-items-center">
+        <span class="text-secondary fw-semibold">Vulnérabilités détectées</span>
+        <div class="d-flex gap-3">
+            <span class="badge" style="background:rgba(239,68,68,0.15);color:#EF4444;">🔴 2 Critical</span>
+            <span class="badge" style="background:rgba(249,115,22,0.15);color:#F97316;">🟠 5 High</span>
+            <span class="badge" style="background:rgba(234,179,8,0.15);color:#EAB308;">🟡 12 Medium</span>
+            <span class="badge" style="background:rgba(34,197,94,0.15);color:#22C55E;">🟢 3 Low</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    @keyframes blink {
+
+        0%,
+        50% {
+            opacity: 1;
+        }
+
+        51%,
+        100% {
+            opacity: 0;
+        }
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .spin {
+        animation: spin 1s linear infinite;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}Nouveau Scan - Pentest Toolbox{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title"><i class="bi bi-rocket-takeoff me-2 text-primary"></i>Nouveau Scan</h1>
+    <p class="page-subtitle">Configurez et lancez un nouveau test de pénétration</p>
+</div>
+
+<form action="#" method="POST" id="scanForm">
+    <!-- Section 1: Target -->
+    <div class="card-custom p-4 mb-4">
+        <h5 class="fw-semibold mb-3"><i class="bi bi-crosshair me-2 text-primary"></i>Cible</h5>
+        <div class="mb-3">
+            <label for="target" class="form-label form-label-custom">Adresse IP ou URL</label>
+            <div class="input-group">
+                <span class="input-group-text bg-dark border-secondary"><i class="bi bi-link-45deg"></i></span>
+                <input type="text" class="form-control form-control-custom" id="target" name="target"
+                    placeholder="https://example.com ou 192.168.1.0/24" required>
+            </div>
+            <div class="form-text text-muted">URL, IP ou plage CIDR</div>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="verifyConn" checked>
+            <label class="form-check-label text-secondary" for="verifyConn">Vérifier la connectivité</label>
+        </div>
+    </div>
+
+    <!-- Section 2: Profiles -->
+    <div class="card-custom p-4 mb-4">
+        <h5 class="fw-semibold mb-3"><i class="bi bi-lightning me-2 text-warning"></i>Profil rapide</h5>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="tool-card text-center" onclick="selectProfile(this,'quick')">
+                    <input type="radio" name="profile" value="quick">
+                    <div class="tool-icon text-info"><i class="bi bi-lightning-charge"></i></div>
+                    <div class="tool-name">Quick Scan</div>
+                    <div class="tool-desc">Nmap basic</div>
+                    <span class="badge bg-info bg-opacity-25 text-info mt-2">~15 min</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="tool-card text-center selected" onclick="selectProfile(this,'standard')">
+                    <input type="radio" name="profile" value="standard" checked>
+                    <div class="tool-icon text-primary"><i class="bi bi-search"></i></div>
+                    <div class="tool-name">Standard</div>
+                    <div class="tool-desc">Nmap + Nikto</div>
+                    <span class="badge bg-primary bg-opacity-25 text-primary mt-2">~1h</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="tool-card text-center" onclick="selectProfile(this,'full')">
+                    <input type="radio" name="profile" value="full">
+                    <div class="tool-icon text-danger"><i class="bi bi-shield-exclamation"></i></div>
+                    <div class="tool-name">Full Audit</div>
+                    <div class="tool-desc">Tous modules</div>
+                    <span class="badge bg-danger bg-opacity-25 text-danger mt-2">~3h+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 3: Tools -->
+    <div class="card-custom p-4 mb-4">
+        <h5 class="fw-semibold mb-3"><i class="bi bi-tools me-2 text-success"></i>Outils</h5>
+
+        <h6 class="text-secondary small text-uppercase mb-3">Reconnaissance</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-6">
+                <div class="tool-card selected">
+                    <input type="checkbox" name="tools" value="nmap" checked>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-diagram-3 text-info"></i><span class="tool-name mb-0">Nmap</span>
+                    </div>
+                    <div class="tool-desc">Scan ports</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="tool-card">
+                    <input type="checkbox" name="tools" value="whois">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-globe text-warning"></i><span class="tool-name mb-0">Whois</span>
+                    </div>
+                    <div class="tool-desc">DNS info</div>
+                </div>
+            </div>
+        </div>
+
+        <h6 class="text-secondary small text-uppercase mb-3">Vulnérabilités</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-6">
+                <div class="tool-card selected">
+                    <input type="checkbox" name="tools" value="nikto" checked>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-shield-x text-danger"></i><span class="tool-name mb-0">Nikto</span>
+                    </div>
+                    <div class="tool-desc">Web scanner</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="tool-card">
+                    <input type="checkbox" name="tools" value="nuclei">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-atom text-primary"></i><span class="tool-name mb-0">Nuclei</span>
+                    </div>
+                    <div class="tool-desc">CVE templates</div>
+                </div>
+            </div>
+        </div>
+
+        <h6 class="text-secondary small text-uppercase mb-3">Exploitation</h6>
+        <div class="row g-3">
+            <div class="col-md-3 col-6">
+                <div class="tool-card">
+                    <input type="checkbox" name="tools" value="sqlmap">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-database-x text-danger"></i><span class="tool-name mb-0">SQLmap</span>
+                    </div>
+                    <div class="tool-desc">SQL injection</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="tool-card">
+                    <input type="checkbox" name="tools" value="hydra">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-key text-warning"></i><span class="tool-name mb-0">Hydra</span>
+                    </div>
+                    <div class="tool-desc">Bruteforce</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 4: Exegol -->
+    <div class="card-custom p-4 mb-4">
+        <h5 class="fw-semibold mb-3"><i class="bi bi-box-seam me-2 text-info"></i>Conteneur Exegol</h5>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label form-label-custom">Container</label>
+                <select class="form-select form-control-custom" name="container">
+                    <option selected>exegol-pentest:latest</option>
+                    <option>exegol-full:latest</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label form-label-custom">Ressources</label>
+                <div class="btn-group w-100">
+                    <input type="radio" class="btn-check" name="resources" id="r1" value="low">
+                    <label class="btn btn-outline-secondary" for="r1">Low</label>
+                    <input type="radio" class="btn-check" name="resources" id="r2" value="standard" checked>
+                    <label class="btn btn-outline-secondary" for="r2">Standard</label>
+                    <input type="radio" class="btn-check" name="resources" id="r3" value="high">
+                    <label class="btn btn-outline-secondary" for="r3">High</label>
+                </div>
+            </div>
+        </div>
+        <div class="alert alert-info bg-info bg-opacity-10 border-info border-opacity-25 mt-3 mb-0">
+            <i class="bi bi-info-circle me-2"></i><small>Un conteneur Docker Exegol sera lancé pour isoler
+                l'exécution.</small>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="d-flex justify-content-between">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-ghost"><i class="bi bi-arrow-left me-2"></i>Annuler</a>
+        <button type="submit" class="btn btn-accent btn-lg"><i class="bi bi-rocket-takeoff me-2"></i>Lancer le
+            Scan</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function selectProfile(el, name) {
+        document.querySelectorAll('.tool-card[onclick]').forEach(c => {
+            c.classList.remove('selected');
+            c.querySelector('input').checked = false;
+        });
+        el.classList.add('selected');
+        el.querySelector('input').checked = true;
+    }
+</script>
+{% endblock %}

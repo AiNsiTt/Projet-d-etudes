@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Pentest Toolbox{% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts: Inter + JetBrains Mono -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* ============================================
+           CUSTOM DARK THEME - PENTEST TOOLBOX
+           ============================================ */
+
+        :root {
+            /* Background Colors */
+            --bg-primary: #0D0D0F;
+            --bg-secondary: #16171B;
+            --bg-tertiary: #1E1F25;
+            --border-color: #2A2B32;
+
+            /* Text Colors */
+            --text-primary: #F0F0F5;
+            --text-secondary: #8B8D97;
+            --text-muted: #5C5D66;
+
+            /* Accent Colors */
+            --accent-primary: #6366F1;
+            --accent-hover: #818CF8;
+
+            /* Severity Colors */
+            --severity-critical: #EF4444;
+            --severity-high: #F97316;
+            --severity-medium: #EAB308;
+            --severity-low: #22C55E;
+            --severity-info: #06B6D4;
+
+            /* Status Colors */
+            --status-running: #3B82F6;
+            --status-success: #22C55E;
+            --status-failed: #EF4444;
+        }
+
+        /* Base Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* ============================================
+           SIDEBAR STYLES
+           ============================================ */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .sidebar-brand i {
+            font-size: 1.75rem;
+            color: var(--accent-primary);
+        }
+
+        .sidebar-brand span {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
+
+        .nav-section-title {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-top: 1rem;
+        }
+
+        .nav-section-title:first-child {
+            margin-top: 0;
+        }
+
+        .sidebar-nav .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav .nav-link:hover {
+            color: var(--text-primary);
+            background-color: var(--bg-tertiary);
+        }
+
+        .sidebar-nav .nav-link.active {
+            color: var(--accent-primary);
+            background-color: rgba(99, 102, 241, 0.1);
+            border-left-color: var(--accent-primary);
+        }
+
+        .sidebar-nav .nav-link i {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* ============================================
+           MAIN CONTENT AREA
+           ============================================ */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* ============================================
+           CUSTOM COMPONENTS
+           ============================================ */
+
+        /* Cards */
+        .card-custom {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            transition: border-color 0.2s ease;
+        }
+
+        .card-custom:hover {
+            border-color: #3A3B42;
+        }
+
+        /* KPI Cards */
+        .kpi-card {
+            padding: 1.5rem;
+        }
+
+        .kpi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .kpi-icon.accent {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--accent-primary);
+        }
+
+        .kpi-icon.success {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--severity-low);
+        }
+
+        .kpi-icon.warning {
+            background: rgba(249, 115, 22, 0.15);
+            color: var(--severity-high);
+        }
+
+        .kpi-icon.info {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--severity-info);
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .kpi-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .kpi-trend {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .kpi-trend.up {
+            color: var(--severity-low);
+        }
+
+        .kpi-trend.down {
+            color: var(--severity-critical);
+        }
+
+        /* Status Badges */
+        .badge-status {
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-running {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--status-running);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .badge-success {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--status-success);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .badge-failed {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--status-failed);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .badge-pending {
+            background: rgba(139, 141, 151, 0.15);
+            color: var(--text-secondary);
+            border: 1px solid rgba(139, 141, 151, 0.3);
+        }
+
+        /* Tables */
+        .table-custom {
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table-custom thead th {
+            background-color: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 1rem 1.25rem;
+        }
+
+        .table-custom tbody td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .table-custom tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-custom tbody tr:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        /* Buttons */
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #4F46E5 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-accent:hover {
+            background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent-primary) 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            color: white;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+
+        .btn-ghost:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-color: #3A3B42;
+        }
+
+        /* Forms */
+        .form-control-custom {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+        }
+
+        .form-control-custom:focus {
+            background-color: var(--bg-tertiary);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+            color: var(--text-primary);
+        }
+
+        .form-control-custom::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-label-custom {
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Tool Selection Cards */
+        .tool-card {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tool-card:hover {
+            border-color: #3A3B42;
+        }
+
+        .tool-card.selected {
+            border-color: var(--accent-primary);
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
+        .tool-card input[type="checkbox"] {
+            display: none;
+        }
+
+        .tool-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .tool-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Flash Messages */
+        .flash-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1050;
+            width: 350px;
+        }
+
+        .flash-message {
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- ============================================
+         SIDEBAR NAVIGATION
+         ============================================ -->
+    <aside class="sidebar">
+        <!-- Brand Header -->
+        <div class="sidebar-header">
+            <a href="{{ url_for('dashboard') }}" class="sidebar-brand">
+                <i class="bi bi-shield-lock-fill"></i>
+                <span>Pentest Toolbox</span>
+            </a>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Principal</div>
+
+            <a href="{{ url_for('dashboard') }}"
+                class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                <i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('new_scan') }}"
+                class="nav-link {% if request.endpoint == 'new_scan' %}active{% endif %}">
+                <i class="bi bi-rocket-takeoff"></i>
+                <span>Nouveau Scan</span>
+            </a>
+
+            <div class="nav-section-title">Analyse</div>
+
+            <a href="{{ url_for('console') }}" class="nav-link {% if request.endpoint == 'console' %}active{% endif %}">
+                <i class="bi bi-terminal"></i>
+                <span>Console Live</span>
+            </a>
+
+            <a href="{{ url_for('results') }}" class="nav-link {% if request.endpoint == 'results' %}active{% endif %}">
+                <i class="bi bi-bar-chart-line"></i>
+                <span>Résultats</span>
+            </a>
+
+            <a href="#" class="nav-link">
+                <i class="bi bi-file-earmark-text"></i>
+                <span>Rapports</span>
+            </a>
+
+            <div class="nav-section-title">Système</div>
+
+            <a href="#" class="nav-link">
+                <i class="bi bi-gear"></i>
+                <span>Configuration</span>
+            </a>
+
+            <a href="#" class="nav-link">
+                <i class="bi bi-question-circle"></i>
+                <span>Aide</span>
+            </a>
+        </nav>
+
+        <!-- User Footer -->
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">
+                    {{ current_user.initials if current_user else 'AN' }}
+                </div>
+                <div class="user-details">
+                    <div class="user-name">{{ current_user.name if current_user else 'Analyste' }}</div>
+                    <div class="user-role">{{ current_user.role if current_user else 'Security Analyst' }}</div>
+                </div>
+                <a href="#" class="btn btn-link text-secondary p-0">
+                    <i class="bi bi-box-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ============================================
+         MAIN CONTENT
+         ============================================ -->
+    <main class="main-content">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-container">
+            {% for category, message in messages %}
+            <div class="alert flash-message alert-{{ 'success' if category == 'success' else 'danger' if category == 'error' else 'info' }} alert-dismissible fade show"
+                role="alert">
+                <i
+                    class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category == 'error' else 'info-circle' }} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Page Content -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Auto-dismiss flash messages after 5 seconds
+        document.addEventListener('DOMContentLoaded', function () {
+            const alerts = document.querySelectorAll('.flash-message');
+            alerts.forEach(function (alert) {
+                setTimeout(function () {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+        });
+
+        // Tool card selection toggle
+        document.querySelectorAll('.tool-card').forEach(function (card) {
+            card.addEventListener('click', function () {
+                const checkbox = this.querySelector('input[type="checkbox"]');
+                checkbox.checked = !checkbox.checked;
+                this.classList.toggle('selected', checkbox.checked);
+            });
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

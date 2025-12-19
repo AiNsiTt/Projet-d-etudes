@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Pentest Toolbox{% endblock %}
+
+{% block content %}
+<!-- ============================================
+     PAGE HEADER
+     ============================================ -->
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Vue d'ensemble de vos activités de pentest</p>
+    </div>
+    <a href="{{ url_for('new_scan') }}" class="btn btn-accent">
+        <i class="bi bi-rocket-takeoff me-2"></i>
+        Nouveau Scan
+    </a>
+</div>
+
+<!-- ============================================
+     KPI CARDS ROW
+     ============================================ -->
+<div class="row g-4 mb-4">
+    <!-- KPI 1: Temps Moyen -->
+    <div class="col-md-4">
+        <div class="card-custom kpi-card">
+            <div class="kpi-icon accent">
+                <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="kpi-value">{{ stats.avg_time if stats else '2h 34m' }}</div>
+            <div class="kpi-label">Temps d'exécution moyen</div>
+            <div class="kpi-trend up">
+                <i class="bi bi-arrow-down"></i> -12% vs mois dernier
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI 2: Vulnérabilités Détectées -->
+    <div class="col-md-4">
+        <div class="card-custom kpi-card">
+            <div class="kpi-icon warning">
+                <i class="bi bi-bug"></i>
+            </div>
+            <div class="kpi-value">{{ stats.total_vulns if stats else '147' }}</div>
+            <div class="kpi-label">Vulnérabilités détectées</div>
+            <div class="kpi-trend up">
+                <i class="bi bi-arrow-up"></i> +23 cette semaine
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI 3: Scans Totaux -->
+    <div class="col-md-4">
+        <div class="card-custom kpi-card">
+            <div class="kpi-icon success">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="kpi-value">{{ stats.total_scans if stats else '42' }}</div>
+            <div class="kpi-label">Scans totaux ce mois</div>
+            <div class="kpi-trend up">
+                <i class="bi bi-graph-up"></i> 94.2% de stabilité
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+     SEVERITY DISTRIBUTION
+     ============================================ -->
+<div class="card-custom p-3 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="text-secondary fw-semibold small text-uppercase">Répartition des sévérités</span>
+    </div>
+    <div class="d-flex gap-4 flex-wrap">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #EF4444;">●</span>
+            <span class="small">Critique: <strong>{{ severity.critical if severity else 12 }}</strong></span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge" style="background: rgba(249, 115, 22, 0.15); color: #F97316;">●</span>
+            <span class="small">High: <strong>{{ severity.high if severity else 34 }}</strong></span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge" style="background: rgba(234, 179, 8, 0.15); color: #EAB308;">●</span>
+            <span class="small">Medium: <strong>{{ severity.medium if severity else 67 }}</strong></span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge" style="background: rgba(34, 197, 94, 0.15); color: #22C55E;">●</span>
+            <span class="small">Low: <strong>{{ severity.low if severity else 34 }}</strong></span>
+        </div>
+    </div>
+    <!-- Progress Bar -->
+    <div class="progress mt-3" style="height: 8px; background: var(--bg-tertiary);">
+        <div class="progress-bar" style="width: 8%; background: #EF4444;"></div>
+        <div class="progress-bar" style="width: 23%; background: #F97316;"></div>
+        <div class="progress-bar" style="width: 46%; background: #EAB308;"></div>
+        <div class="progress-bar" style="width: 23%; background: #22C55E;"></div>
+    </div>
+</div>
+
+<!-- ============================================
+     RECENT SCANS TABLE
+     ============================================ -->
+<div class="card-custom table-custom">
+    <div class="p-3 border-bottom" style="border-color: var(--border-color) !important;">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-semibold">Scans Récents</h5>
+            <div class="d-flex gap-2">
+                <button class="btn btn-ghost btn-sm active">Tous</button>
+                <button class="btn btn-ghost btn-sm">En cours</button>
+                <button class="btn btn-ghost btn-sm">Terminés</button>
+                <button class="btn btn-ghost btn-sm">Échoués</button>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-custom mb-0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cible</th>
+                <th>Outils</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {# ============================================
+            EXEMPLE DE DONNÉES JINJA2
+            En production, remplacez cette liste par
+            la vraie variable {{ scans }} passée
+            depuis votre route Flask:
+
+            @app.route('/dashboard')
+            def dashboard():
+            scans = Scan.query.order_by(...).all()
+            return render_template('dashboard.html', scans=scans)
+            ============================================ #}
+
+            {% set scans = scans if scans else [
+            {'id': 1042, 'target': 'https://target.example.com', 'tools': ['Nmap', 'Nikto'], 'date': '19/12/2024 10:47',
+            'status': 'running', 'progress': 45},
+            {'id': 1041, 'target': '192.168.1.0/24', 'tools': ['Full Audit'], 'date': '19/12/2024 08:30', 'status':
+            'success', 'vulns': 12},
+            {'id': 1040, 'target': 'ftp://legacy.internal', 'tools': ['Nmap', 'Hydra'], 'date': '18/12/2024 14:32',
+            'status': 'failed', 'error': 'Timeout'},
+            {'id': 1039, 'target': 'https://api.client.io', 'tools': ['SQLmap', 'Nikto'], 'date': '18/12/2024 11:15',
+            'status': 'success', 'vulns': 5},
+            {'id': 1038, 'target': '10.0.0.0/16', 'tools': ['Nmap'], 'date': '17/12/2024 16:00', 'status': 'success',
+            'vulns': 0}
+            ] %}
+
+            {% for scan in scans %}
+            <tr>
+                <!-- ID -->
+                <td>
+                    <span class="fw-semibold">#{{ scan.id }}</span>
+                </td>
+
+                <!-- Cible -->
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-{{ 'globe' if 'http' in scan.target else 'hdd-network' }} text-secondary"></i>
+                        <span>{{ scan.target }}</span>
+                    </div>
+                </td>
+
+                <!-- Outils -->
+                <td>
+                    <div class="d-flex gap-1 flex-wrap">
+                        {% for tool in scan.tools %}
+                        <span class="badge bg-secondary bg-opacity-25 text-secondary">{{ tool }}</span>
+                        {% endfor %}
+                    </div>
+                </td>
+
+                <!-- Date -->
+                <td class="text-secondary">{{ scan.date }}</td>
+
+                <!-- Statut -->
+                <td>
+                    {% if scan.status == 'running' %}
+                    <span class="badge-status badge-running">
+                        <i class="bi bi-arrow-repeat me-1"></i>
+                        En cours ({{ scan.progress }}%)
+                    </span>
+                    {% elif scan.status == 'success' %}
+                    <span class="badge-status badge-success">
+                        <i class="bi bi-check-lg me-1"></i>
+                        Terminé ({{ scan.vulns }} vulns)
+                    </span>
+                    {% elif scan.status == 'failed' %}
+                    <span class="badge-status badge-failed">
+                        <i class="bi bi-x-lg me-1"></i>
+                        Échoué
+                    </span>
+                    {% else %}
+                    <span class="badge-status badge-pending">
+                        <i class="bi bi-hourglass me-1"></i>
+                        En attente
+                    </span>
+                    {% endif %}
+                </td>
+
+                <!-- Actions -->
+                <td>
+                    <div class="d-flex gap-2">
+                        {% if scan.status == 'running' %}
+                        <a href="#" class="btn btn-ghost btn-sm" title="Voir en direct">
+                            <i class="bi bi-terminal"></i>
+                        </a>
+                        <a href="#" class="btn btn-ghost btn-sm text-warning" title="Arrêter">
+                            <i class="bi bi-stop-circle"></i>
+                        </a>
+                        {% elif scan.status == 'success' %}
+                        <a href="#" class="btn btn-ghost btn-sm" title="Voir résultats">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="#" class="btn btn-ghost btn-sm" title="Télécharger rapport">
+                            <i class="bi bi-download"></i>
+                        </a>
+                        {% elif scan.status == 'failed' %}
+                        <a href="#" class="btn btn-ghost btn-sm" title="Voir logs">
+                            <i class="bi bi-journal-text"></i>
+                        </a>
+                        <a href="#" class="btn btn-ghost btn-sm text-primary" title="Relancer">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Table Footer with Pagination -->
+    <div class="p-3 border-top d-flex justify-content-between align-items-center"
+        style="border-color: var(--border-color) !important;">
+        <span class="text-secondary small">Affichage 1-5 sur {{ scans|length if scans else 42 }} scans</span>
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item disabled">
+                    <a class="page-link bg-transparent border-secondary" href="#">Précédent</a>
+                </li>
+                <li class="page-item active">
+                    <a class="page-link" href="#"
+                        style="background: var(--accent-primary); border-color: var(--accent-primary);">1</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-transparent border-secondary" href="#">2</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-transparent border-secondary" href="#">3</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-transparent border-secondary" href="#">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}
