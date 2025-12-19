@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Pentest Toolbox{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0D0D0F;
+            --bg-secondary: #16171B;
+            --bg-tertiary: #1E1F25;
+            --border-color: #2A2B32;
+            --text-primary: #F0F0F5;
+            --text-secondary: #8B8D97;
+            --accent: #6366F1;
+            --sev-critical: #EF4444;
+            --sev-high: #F97316;
+            --sev-medium: #EAB308;
+            --sev-low: #22C55E;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .sidebar-brand i {
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        .sidebar-brand span {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .75rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .nav-link.active {
+            color: var(--accent);
+            background: rgba(99, 102, 241, .1);
+            border-left-color: var(--accent);
+        }
+
+        .nav-link i {
+            font-size: 1.2rem;
+        }
+
+        .main-content {
+            margin-left: 240px;
+            padding: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: .25rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+        }
+
+        .card-custom {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent), #4F46E5);
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            padding: .75rem 1.5rem;
+            border-radius: 8px;
+        }
+
+        .btn-accent:hover {
+            background: linear-gradient(135deg, #818CF8, var(--accent));
+            color: #fff;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .form-control-custom {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 8px;
+        }
+
+        .form-control-custom:focus {
+            background: var(--bg-tertiary);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, .15);
+            color: var(--text-primary);
+        }
+
+        .badge-critical {
+            background: rgba(239, 68, 68, .15);
+            color: var(--sev-critical);
+        }
+
+        .badge-high {
+            background: rgba(249, 115, 22, .15);
+            color: var(--sev-high);
+        }
+
+        .badge-medium {
+            background: rgba(234, 179, 8, .15);
+            color: var(--sev-medium);
+        }
+
+        .badge-low {
+            background: rgba(34, 197, 94, .15);
+            color: var(--sev-low);
+        }
+
+        .badge-info {
+            background: rgba(6, 182, 212, .15);
+            color: #06B6D4;
+        }
+
+        .badge-running {
+            background: rgba(59, 130, 246, .15);
+            color: #3B82F6;
+        }
+
+        .badge-completed {
+            background: rgba(34, 197, 94, .15);
+            color: #22C55E;
+        }
+
+        .badge-failed {
+            background: rgba(239, 68, 68, .15);
+            color: #EF4444;
+        }
+
+        .badge-pending {
+            background: rgba(139, 141, 151, .15);
+            color: var(--text-secondary);
+        }
+
+        .terminal {
+            background: #0A0A0C;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: #4ADE80;
+            padding: 1rem;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            overflow-y: auto;
+        }
+
+        .tool-card {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .tool-card:hover {
+            border-color: #3A3B42;
+        }
+
+        .tool-card.selected {
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, .05);
+        }
+
+        .tool-card input[type="checkbox"] {
+            display: none;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .flash-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1050;
+            width: 350px;
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <a href="{{ url_for('dashboard') }}" class="sidebar-brand">
+            <i class="bi bi-shield-lock-fill"></i><span>Pentest Toolbox</span>
+        </a>
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('dashboard') }}"
+                class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('new_scan') }}"
+                class="nav-link {% if request.endpoint == 'new_scan' %}active{% endif %}">
+                <i class="bi bi-rocket-takeoff"></i><span>Nouveau Scan</span>
+            </a>
+        </nav>
+    </aside>
+    <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-container">
+            {% for cat, msg in messages %}
+            <div class="alert alert-{{ 'success' if cat == 'success' else 'danger' }} alert-dismissible fade show"
+                role="alert">
+                {{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll('.tool-card').forEach(c => {
+            c.addEventListener('click', () => {
+                const cb = c.querySelector('input[type="checkbox"]');
+                if (cb) { cb.checked = !cb.checked; c.classList.toggle('selected', cb.checked); }
+            });
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

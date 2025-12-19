@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Résultats - Scan #{{ scan.id }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="page-title"><i class="bi bi-bar-chart-line me-2" style="color:#22C55E;"></i>Résultats</h1>
+        <p class="page-subtitle">Scan #{{ scan.id }} • {{ scan.target }}</p>
+    </div>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-ghost"><i class="bi bi-arrow-left me-2"></i>Dashboard</a>
+</div>
+
+<!-- Severity Summary -->
+{% set sev_counts = {'critical':0,'high':0,'medium':0,'low':0,'info':0} %}
+{% for v in vulnerabilities %}
+{% if sev_counts.update({v.severity: sev_counts[v.severity] + 1}) %}{% endif %}
+{% endfor %}
+
+<div class="row g-3 mb-4">
+    <div class="col">
+        <div class="card-custom p-3 text-center" style="border-left:3px solid var(--sev-critical);">
+            <div class="fs-3 fw-bold" style="color:var(--sev-critical);">{{ sev_counts.critical }}</div><small
+                class="text-secondary">Critical</small>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card-custom p-3 text-center" style="border-left:3px solid var(--sev-high);">
+            <div class="fs-3 fw-bold" style="color:var(--sev-high);">{{ sev_counts.high }}</div><small
+                class="text-secondary">High</small>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card-custom p-3 text-center" style="border-left:3px solid var(--sev-medium);">
+            <div class="fs-3 fw-bold" style="color:var(--sev-medium);">{{ sev_counts.medium }}</div><small
+                class="text-secondary">Medium</small>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card-custom p-3 text-center" style="border-left:3px solid var(--sev-low);">
+            <div class="fs-3 fw-bold" style="color:var(--sev-low);">{{ sev_counts.low }}</div><small
+                class="text-secondary">Low</small>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card-custom p-3 text-center" style="border-left:3px solid #06B6D4;">
+            <div class="fs-3 fw-bold" style="color:#06B6D4;">{{ sev_counts.info }}</div><small
+                class="text-secondary">Info</small>
+        </div>
+    </div>
+</div>
+
+<!-- Vulnerabilities Table -->
+<div class="card-custom">
+    <div class="p-3 border-bottom" style="border-color:var(--border-color)!important;">
+        <h5 class="mb-0 fw-semibold">Vulnérabilités Détectées</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-dark table-hover mb-0">
+            <thead>
+                <tr>
+                    <th style="width:100px;">Sévérité</th>
+                    <th>Titre</th>
+                    <th>Host</th>
+                    <th>Port</th>
+                    <th>Outil</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in vulnerabilities %}
+                <tr>
+                    <td><span class="badge badge-{{ v.severity }} px-2 py-1">{{ v.severity|upper }}</span></td>
+                    <td>
+                        <div class="fw-semibold">{{ v.title }}</div>
+                        {% if v.description %}<small class="text-secondary">{{ v.description[:100] }}{{ '...' if
+                            v.description|length > 100 }}</small>{% endif %}
+                    </td>
+                    <td><code style="color:#06B6D4;">{{ v.host or '-' }}</code></td>
+                    <td>{{ v.port or '-' }}</td>
+                    <td><span class="badge bg-secondary">{{ v.tool }}</span></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-secondary py-4">Aucune vulnérabilité détectée</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

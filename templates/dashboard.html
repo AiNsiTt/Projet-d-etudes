@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Pentest Toolbox{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Vue d'ensemble de vos pentests</p>
+    </div>
+    <a href="{{ url_for('new_scan') }}" class="btn btn-accent"><i class="bi bi-rocket-takeoff me-2"></i>Nouveau Scan</a>
+</div>
+
+<!-- KPIs -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card-custom p-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded p-2" style="background:rgba(99,102,241,.15);"><i class="bi bi-search fs-4"
+                        style="color:var(--accent);"></i></div>
+                <div>
+                    <div class="kpi-value">{{ total_scans }}</div>
+                    <div class="text-secondary small">Scans totaux</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card-custom p-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded p-2" style="background:rgba(249,115,22,.15);"><i class="bi bi-bug fs-4"
+                        style="color:var(--sev-high);"></i></div>
+                <div>
+                    <div class="kpi-value">{{ total_vulns }}</div>
+                    <div class="text-secondary small">Vulnérabilités</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card-custom p-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded p-2" style="background:rgba(34,197,94,.15);"><i class="bi bi-check-circle fs-4"
+                        style="color:var(--sev-low);"></i></div>
+                <div>
+                    <div class="kpi-value">{{ completed_scans }}</div>
+                    <div class="text-secondary small">Terminés</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Severity -->
+{% if severity %}
+<div class="card-custom p-3 mb-4">
+    <div class="d-flex gap-4 flex-wrap">
+        <span class="badge badge-critical px-3 py-2">🔴 Critical: {{ severity.critical }}</span>
+        <span class="badge badge-high px-3 py-2">🟠 High: {{ severity.high }}</span>
+        <span class="badge badge-medium px-3 py-2">🟡 Medium: {{ severity.medium }}</span>
+        <span class="badge badge-low px-3 py-2">🟢 Low: {{ severity.low }}</span>
+    </div>
+</div>
+{% endif %}
+
+<!-- Scans Table -->
+<div class="card-custom">
+    <div class="p-3 border-bottom" style="border-color:var(--border-color)!important;">
+        <h5 class="mb-0 fw-semibold">Scans Récents</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-dark table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cible</th>
+                    <th>Outils</th>
+                    <th>Statut</th>
+                    <th>Vulns</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for scan in scans %}
+                <tr>
+                    <td>#{{ scan.id }}</td>
+                    <td>{{ scan.target }}</td>
+                    <td>{% for t in scan.tools.split(',') %}<span class="badge bg-secondary me-1">{{ t }}</span>{%
+                        endfor %}</td>
+                    <td>
+                        {% if scan.status == 'running' %}<span class="badge badge-running">En cours</span>
+                        {% elif scan.status == 'completed' %}<span class="badge badge-completed">Terminé</span>
+                        {% elif scan.status == 'failed' %}<span class="badge badge-failed">Échoué</span>
+                        {% else %}<span class="badge badge-pending">En attente</span>{% endif %}
+                    </td>
+                    <td>{{ scan.vulnerabilities|length }}</td>
+                    <td>
+                        {% if scan.status == 'running' %}
+                        <a href="{{ url_for('console', scan_id=scan.id) }}" class="btn btn-ghost btn-sm"><i
+                                class="bi bi-terminal"></i></a>
+                        {% else %}
+                        <a href="{{ url_for('results', scan_id=scan.id) }}" class="btn btn-ghost btn-sm"><i
+                                class="bi bi-eye"></i></a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center text-secondary py-4">Aucun scan pour l'instant</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

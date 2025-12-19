@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Nouveau Scan{% endblock %}
+{% block content %}
+<div class="mb-4">
+    <h1 class="page-title"><i class="bi bi-rocket-takeoff me-2" style="color:var(--accent);"></i>Nouveau Scan</h1>
+    <p class="page-subtitle">Configurez votre test de pénétration</p>
+</div>
+
+<form action="{{ url_for('create_scan') }}" method="POST">
+    <!-- Target -->
+    <div class="card-custom p-4 mb-4">
+        <h5 class="fw-semibold mb-3"><i class="bi bi-crosshair me-2" style="color:var(--accent);"></i>Cible</h5>
+        <div class="input-group">
+            <span class="input-group-text bg-dark border-secondary"><i class="bi bi-link-45deg"></i></span>
+            <input type="text" class="form-control form-control-custom" name="target"
+                placeholder="https://example.com ou 192.168.1.1" required>
+        </div>
+        <div class="form-text text-secondary mt-2">URL, adresse IP ou plage CIDR</div>
+    </div>
+
+    <!-- Tools -->
+    <div class="card-custom p-4 mb-4">
+        <h5 class="fw-semibold mb-3"><i class="bi bi-tools me-2" style="color:#22C55E;"></i>Outils</h5>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="tool-card selected">
+                    <input type="checkbox" name="tools" value="nmap" checked>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-diagram-3" style="color:#06B6D4;"></i>
+                        <span class="fw-semibold">Nmap</span>
+                    </div>
+                    <small class="text-secondary">Scan de ports et services</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="tool-card">
+                    <input type="checkbox" name="tools" value="nikto">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-shield-x" style="color:#EF4444;"></i>
+                        <span class="fw-semibold">Nikto</span>
+                    </div>
+                    <small class="text-secondary">Scanner web vulnérabilités</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="d-flex justify-content-between">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-ghost"><i class="bi bi-arrow-left me-2"></i>Annuler</a>
+        <button type="submit" class="btn btn-accent btn-lg"><i class="bi bi-rocket-takeoff me-2"></i>Lancer le
+            Scan</button>
+    </div>
+</form>
+{% endblock %}

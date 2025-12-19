@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Console - Scan #{{ scan.id }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="page-title"><i class="bi bi-terminal me-2" style="color:#06B6D4;"></i>Console Live</h1>
+        <p class="page-subtitle">Scan #{{ scan.id }} • {{ scan.target }}</p>
+    </div>
+    <div>
+        <span id="status-badge"
+            class="badge badge-{{ 'running' if scan.status == 'running' else 'completed' if scan.status == 'completed' else 'failed' }} fs-6 me-2">
+            {{ scan.status|capitalize }}
+        </span>
+        {% if scan.status == 'running' %}
+        <button class="btn btn-ghost text-danger" onclick="stopScan()"><i
+                class="bi bi-stop-circle me-1"></i>Stop</button>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Progress -->
+<div class="card-custom p-4 mb-4">
+    <div class="d-flex justify-content-between mb-2">
+        <span class="fw-semibold">Progression</span>
+        <span id="progress-text">{{ scan.progress }}%</span>
+    </div>
+    <div class="progress" style="height:10px;background:var(--bg-tertiary);">
+        <div id="progress-bar" class="progress-bar"
+            style="width:{{ scan.progress }}%;background:linear-gradient(90deg,var(--accent),#818CF8);"></div>
+    </div>
+</div>
+
+<!-- Terminal -->
+<div class="card-custom mb-4">
+    <div class="p-3 border-bottom d-flex justify-content-between" style="border-color:var(--border-color)!important;">
+        <span class="fw-semibold"><i class="bi bi-terminal me-2"></i>Output</span>
+        <span id="auto-scroll-indicator" class="text-secondary small">Auto-scroll: ON</span>
+    </div>
+    <div id="terminal" class="terminal" style="height:400px;overflow-y:auto;">{{ scan.output }}</div>
+</div>
+
+<!-- Actions -->
+<div class="d-flex gap-2">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-ghost"><i class="bi bi-arrow-left me-2"></i>Dashboard</a>
+    {% if scan.status == 'completed' %}
+    <a href="{{ url_for('results', scan_id=scan.id) }}" class="btn btn-accent"><i class="bi bi-bar-chart me-2"></i>Voir
+        Résultats</a>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const scanId = {{ scan.id }};
+    let polling = true;
+
+    function updateConsole() {
+        if (!polling) return;
+
+        fetch(`/api/scan/${scanId}/status`)
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('terminal').textContent = data.output;
+                document.getElementById('progress-bar').style.width = data.progress + '%';
+                document.getElementById('progress-text').textContent = data.progress + '%';
+
+                // Auto-scroll
+                const terminal = document.getElementById('terminal');
+                terminal.scrollTop = terminal.scrollHeight;
+
+                if (data.status === 'running') {
+                    setTimeout(updateConsole, 2000);
+                } else {
+                    polling = false;
+                    document.getElementById('status-badge').className = 'badge badge-' + (data.status === 'completed' ? 'completed' : 'failed') + ' fs-6 me-2';
+                    document.getElementById('status-badge').textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+                    if (data.status === 'completed') {
+                        location.reload();
+                    }
+                }
+            });
+    }
+
+    function stopScan() {
+        fetch(`/api/scan/${scanId}/stop`, { method: 'POST' }).then(() => location.reload());
+    }
+
+    {% if scan.status == 'running' %}
+    updateConsole();
+    {% endif %}
+</script>
+{% endblock %}
